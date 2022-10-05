@@ -158,16 +158,34 @@ ctrl::Vector6D CartesianForceController::computeForceError()
   ctrl::Vector6D target_wrench;
   m_hand_frame_control = get_node()->get_parameter("hand_frame_control").as_bool();
 
+  // Get deadband parameters
+  ctrl::Vector6D deadband;
+  deadband << get_node()->get_parameter("deadband.force.x").as_double(),
+    get_node()->get_parameter("deadband.force.y").as_double(),
+    get_node()->get_parameter("deadband.force.z").as_double(),
+    get_node()->get_parameter("deadband.torque.x").as_double(),
+    get_node()->get_parameter("deadband.torque.y").as_double(),
+    get_node()->get_parameter("deadband.torque.z").as_double();
+
   if (m_hand_frame_control) // Assume end-effector frame by convention
   {
     target_wrench = Base::displayInBaseLink(m_target_wrench,Base::m_end_effector_link);
+    deadband = Base::displayInBaseLink(deadband, Base::m_end_effector_link);
   }
   else // Default to robot base frame
   {
     target_wrench = m_target_wrench;
   }
 
-  return m_ft_sensor_wrench + target_wrench;
+  // Apply deadband
+  ctrl::Vector6D error = m_ft_sensor_wrench + target_wrench;
+  for (int i = 0; i < error.rows(); ++i) {
+    if (abs(error(i)) < abs(deadband(i))) {
+      error(i) = 0.0;
+    }
+  }
+
+  return error;
 }
 
 void CartesianForceController::computeFtSensorTransform(const std::string& sensor_ref,
