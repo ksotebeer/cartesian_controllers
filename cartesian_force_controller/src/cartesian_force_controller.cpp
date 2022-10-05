@@ -59,6 +59,12 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn Cartes
   }
 
   auto_declare<bool>("hand_frame_control", true);
+  auto_declare<double>("deadband.force.x", 0.0);
+  auto_declare<double>("deadband.force.y", 0.0);
+  auto_declare<double>("deadband.force.z", 0.0);
+  auto_declare<double>("deadband.torque.x", 0.0);
+  auto_declare<double>("deadband.torque.y", 0.0);
+  auto_declare<double>("deadband.torque.z", 0.0);
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;;
 }
@@ -72,6 +78,12 @@ controller_interface::return_type CartesianForceController::init(const std::stri
   }
 
   auto_declare<bool>("hand_frame_control", true);
+  auto_declare<double>("deadband.force.x", 0.0);
+  auto_declare<double>("deadband.force.y", 0.0);
+  auto_declare<double>("deadband.force.z", 0.0);
+  auto_declare<double>("deadband.torque.x", 0.0);
+  auto_declare<double>("deadband.torque.y", 0.0);
+  auto_declare<double>("deadband.torque.z", 0.0);
 
   return controller_interface::return_type::OK;
 }
